@@ -86,9 +86,12 @@ class ProcessPool
 
     /**
      * @param callable $callback called when process is done
+     * @return array
      */
     public function run(callable $callback = null)
     {
+        $result = [];
+
         for ($i = 0; $i < $this->numProcesses; $i++) {
             $argument = array_shift($this->arguments);
             if ($argument) {
@@ -103,7 +106,10 @@ class ProcessPool
             foreach ($this->processes as $key => $process) {
                 if (!$process['process']->isRunning()) {
                     if (is_callable($callback)) {
-                        $callback($process['argument'], $process['process']->getOutput());
+                        $value = $process['process']->getOutput();
+
+                        $callback($process['argument'], $value);
+                        $result[$process['argument']] = $value;
                     }
 
                     unset($this->processes[$key]);
@@ -117,6 +123,8 @@ class ProcessPool
 
             usleep($this->tick);
         }
+
+        return $result;
     }
 
     /**

@@ -17,6 +17,8 @@ $pool = new ProcessPool(
     2 // number processes (running at same time)
 );
 
-$pool->run(function ($arg, $result) {
+$result = $pool->run(function ($arg, $result) {
     echo "{$arg}: {$result}\n";
 });
+
+var_dump($result);
